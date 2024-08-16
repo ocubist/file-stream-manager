@@ -1,13 +1,13 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
-import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
-import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
-import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { removeProcessListeners } from "../helpers/removeProcessListeners";
+import { useFileStreamManagerSingleton } from "../../config/useFileStreamManagerSingleton";
+import { createOpenFileStreamKey as fileStreamKey } from "../../helpers/createOpenFileStreamKey";
+import { OpenFileStreamSingletonObject } from "../../types/OpenFIleStreamSingletonObject";
+import { getAllFileStreamSingletonKeys } from "../../helpers/getAllFileStreamSingletonKeys";
+import { removeProcessListeners } from "../../helpers/removeProcessListeners";
 import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
-import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
+import { ensureNodeEnvironment } from "../../helpers/ensureNodeEnvironment";
 
-const { getSingleton, removeSingleton } = useFileStreamManagerSingleton();
+const { getSingleton } = useFileStreamManagerSingleton();
 
 const { craftMysticError } = useErrorAlchemy(
   "file-stream-manager",
@@ -26,7 +26,13 @@ export const FileStreamNotFoundError = craftMysticError({
 
 /**
  * Closes a file stream and removes it from the singleton manager.
- * @param filePath - Path to the file of the stream to close.
+ * Ensures that the file stream is properly closed, releasing any resources
+ * associated with it and preventing memory leaks or resource exhaustion.
+ *
+ * @param {string} filePath - The path to the file whose stream should be closed.
+ * @throws {NotNodeEnvironmentError} Thrown if the environment is not a Node.js server.
+ * @throws {FileStreamNotFoundError} Thrown if the file stream to close is not found.
+ * @throws {CloseFileStreamFailedError} Thrown if any unexpected error occurs during the closing process.
  */
 export const closeFileStream = async (filePath: string) => {
   ensureNodeEnvironment();

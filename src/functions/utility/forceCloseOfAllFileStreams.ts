@@ -1,8 +1,8 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
-import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
-import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
+import { useFileStreamManagerSingleton } from "../../config/useFileStreamManagerSingleton";
+import { getAllFileStreamSingletonKeys } from "../../helpers/getAllFileStreamSingletonKeys";
+import { OpenFileStreamSingletonObject } from "../../types/OpenFIleStreamSingletonObject";
+import { ensureNodeEnvironment } from "../../helpers/ensureNodeEnvironment";
 
 const { getSingleton, removeSingleton } = useFileStreamManagerSingleton();
 
@@ -18,7 +18,11 @@ const ForceCloseOfAllFileStreamsFailedError = craftMysticError({
 
 /**
  * Forces the closure of all active file streams.
- * Used typically for cleanup or shutdown processes.
+ * Used typically for cleanup or shutdown processes to ensure that all file streams
+ * are properly closed and resources are released.
+ *
+ * @throws {NotNodeEnvironmentError} Thrown if the environment is not a Node.js server.
+ * @throws {ForceCloseOfAllFileStreamsFailedError} Thrown if an unexpected error occurs while forcing the closure of file streams.
  */
 export const forceCloseOfAllFileStreams = () => {
   ensureNodeEnvironment();

@@ -1,12 +1,13 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import SonicBoom, { SonicBoomOpts } from "sonic-boom";
-import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
-import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
-import { createFileAndFolderIfDoesntExist } from "../helpers/createFileAndFolderIfDoesntExist";
-import { FileStreamOptions } from "../types/StreamOptionsType";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { addProcessListeners } from "../helpers/addProcessListener";
-import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
+import { useFileStreamManagerSingleton } from "../../config/useFileStreamManagerSingleton";
+import { createOpenFileStreamKey as fileStreamKey } from "../../helpers/createOpenFileStreamKey";
+import { createFileAndFolderIfDoesntExist } from "../../helpers/createFileAndFolderIfDoesntExist";
+import { FileStreamOptions } from "../../types/StreamOptionsType";
+import { getAllFileStreamSingletonKeys } from "../../helpers/getAllFileStreamSingletonKeys";
+import { addProcessListeners } from "../../helpers/addProcessListener";
+import { ensureNodeEnvironment } from "../../helpers/ensureNodeEnvironment";
+import { delay } from "@ocubist/utils";
 
 const { setSingletonIfNotExists, removeSingleton } =
   useFileStreamManagerSingleton();
@@ -33,17 +34,18 @@ export const FileStreamToOpenAlreadyOpenError = craftMysticError({
 });
 
 /**
- * Delay function to wait for a specified amount of time.
- * @param ms - The number of milliseconds to wait.
- * @returns A promise that resolves after the specified time.
- */
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/**
  * Opens a file stream and stores it in a singleton for shared access.
- * @param filePath - Path to the file where the stream will write.
- * @param options - Optional configuration options for the file stream.
- * @returns The key of the singleton object for the opened stream.
+ * Creates the necessary directories and the file if they do not exist.
+ *
+ * @param {string} filePath - The path to the file where the stream will write.
+ * @param {FileStreamOptions} [options] - Optional configuration options for the file stream.
+ * @param {boolean} [options.mkDir=true] - Whether to create directories if they don't exist.
+ * @param {boolean} [options.sync=false] - Whether to synchronize writes to the file.
+ * @param {number} [options.minBufferSize=4096] - The minimum buffer size before writing to the file.
+ * @returns {Promise<string>} The key of the singleton object for the opened stream.
+ * @throws {NotNodeEnvironmentError} Thrown if the environment is not a Node.js server.
+ * @throws {FileStreamToOpenAlreadyOpenError} Thrown if a file stream for the given file path is already open.
+ * @throws {OpenFileStreamFailedError} Thrown if any unexpected error occurs during the opening of the file stream.
  */
 export const openFileStream = async (
   filePath: string,

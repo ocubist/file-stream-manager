@@ -1,6 +1,5 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
-import fs from "fs/promises";
-import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
+import { ensureNodeEnvironment } from "../../helpers/ensureNodeEnvironment";
 
 const { craftMysticError } = useErrorAlchemy(
   "file-stream-manager",
@@ -19,12 +18,21 @@ export const FileToReadDoesNotExistError = craftMysticError({
 
 /**
  * Reads a file and returns its content as a string.
- * @param filePath - The path to the file to read.
- * @returns A promise that resolves to the file content as a string.
- * @throws ReadFileStreamFailedError if the file cannot be read.
+ *
+ * This function reads the entire content of a file at the specified path and returns it
+ * as a string. It does not require an open file stream, making it suitable for simple
+ * read operations.
+ *
+ * @param {string} filePath - The path to the file to read.
+ * @returns {Promise<string>} A promise that resolves to the file content as a string.
+ * @throws {NotNodeEnvironmentError} Thrown if the environment is not a Node.js server.
+ * @throws {FileToReadDoesNotExistError} Thrown if the file to read does not exist.
+ * @throws {ReadFileStreamFailedError} Thrown if any unexpected error occurs while reading the file.
  */
 export const readFileStream = async (filePath: string): Promise<string> => {
   ensureNodeEnvironment();
+
+  const fs = await import("fs/promises");
 
   try {
     const data = await fs.readFile(filePath, "utf8");

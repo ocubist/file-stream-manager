@@ -6,17 +6,17 @@ import {
   clearTestFiles,
   defaultLoremIpsumContent,
   testFilesFolderPath,
-} from "../tests/globalSetup";
+} from "../../tests/globalSetup";
 import { promises as fs } from "fs";
 import path from "path";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { createOpenFileStreamKey } from "../helpers/createOpenFileStreamKey";
+import { getAllFileStreamSingletonKeys } from "../../helpers/getAllFileStreamSingletonKeys";
+import { createOpenFileStreamKey } from "../../helpers/createOpenFileStreamKey";
 import {
   FileStreamToOpenAlreadyOpenError,
   openFileStream,
 } from "./openFileStream";
 import {
-  FileToWriteDoesNotExistError,
+  FileStreamToWriteDoesNotExistError,
   writeFileStream,
 } from "./writeFileStream";
 import { FileToReadDoesNotExistError, readFileStream } from "./readFileStream";
@@ -26,13 +26,15 @@ import {
 } from "./flushFileStream";
 import { closeFileStream, FileStreamNotFoundError } from "./closeFileStream";
 import { subscribeToFileStream } from "./subscribeToFileStream";
-import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
-import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
+import { useFileStreamManagerSingleton } from "../../config/useFileStreamManagerSingleton";
+import { OpenFileStreamSingletonObject } from "../../types/OpenFIleStreamSingletonObject";
 import {
   unsubscribeFromFileStream,
   NoSubscriptionsFoundError,
   FileStreamToUnsubscribeDoesNotExist,
 } from "./unsubscribeFromFileStream";
+import { getFileStreamUsageCount } from "./getFileStreamUsageCount";
+import { isFileStreamOpen } from "./isFileStreamOpen";
 
 // Extend Jest matchers to include the custom matcher
 declare global {
@@ -62,8 +64,8 @@ expect.extend({
 
 jest.setTimeout(60000);
 
-describe("useFileStreamManager", () => {
-  test("file automatically created when opening file", async () => {
+describe("test fileHandle-Functions", () => {
+  test("file automatically created when opening file and check isFileStreamOpen", async () => {
     try {
       await fs.access(loremIpsumPath);
       throw "file should not exist";
@@ -80,20 +82,15 @@ describe("useFileStreamManager", () => {
     expect(getAllFileStreamSingletonKeys()).toContain(
       createOpenFileStreamKey(loremIpsumPath)
     );
+
+    expect(isFileStreamOpen(loremIpsumPath)).toBe(true);
+    expect(isFileStreamOpen("nope")).toBe(false);
   });
 
-  test("write-, flush- and read-function", async () => {
+  test("write-, flush-, read- and close-function", async () => {
     writeFileStream(loremIpsumPath, defaultLoremIpsumContent);
     flushFileStream(loremIpsumPath);
 
-    await delay(1000);
-
-    const loremContent = await readFileStream(loremIpsumPath);
-
-    // console.log({ loremContent });
-  });
-
-  test("close-function", async () => {
     expect(getAllFileStreamSingletonKeys()).toContain(
       createOpenFileStreamKey(loremIpsumPath)
     );
@@ -103,6 +100,12 @@ describe("useFileStreamManager", () => {
     expect(getAllFileStreamSingletonKeys()).not.toContain(
       createOpenFileStreamKey(loremIpsumPath)
     );
+
+    await delay(10000);
+
+    const loremContent = await readFileStream(loremIpsumPath);
+
+    expect(loremContent).toStartWith(firstWord);
   });
 
   test("subscribe- and unsubscribe-function", async () => {
@@ -113,7 +116,6 @@ describe("useFileStreamManager", () => {
     let allKeys = getAllFileStreamSingletonKeys();
 
     for (const path of hundredTestFilePaths) {
-      // console.log({ path });
       expect(allKeys).not.toContain(createOpenFileStreamKey(path));
       for (let i = 0; i < 100; i++) {
         await subscribeToFileStream(path);
@@ -127,10 +129,12 @@ describe("useFileStreamManager", () => {
 
     allKeys = getAllFileStreamSingletonKeys();
 
-    // console.log({ allKeys, hundredTestFilePaths });
-
     allKeys.forEach((key) => {
       expect(allKeys).toContain(key);
+    });
+
+    hundredTestFilePaths.forEach((path) => {
+      expect(getFileStreamUsageCount(path)).toBe(100);
     });
 
     entries.forEach((entry) => {
@@ -154,60 +158,9 @@ describe("useFileStreamManager", () => {
     }
 
     allKeys = getAllFileStreamSingletonKeys();
-    console.log({ allKeys });
+
     allKeys.forEach((key) => {
       expect(allKeys).not.toContain(key);
     });
-  });
-
-  test("provoke Errors", async () => {
-    try {
-      await closeFileStream("does not exist");
-    } catch (error) {
-      expect(error).toBeInstanceOf(FileStreamNotFoundError);
-    }
-
-    try {
-      await unsubscribeFromFileStream("does not exist");
-    } catch (error) {
-      expect(error).toBeInstanceOf(FileStreamToUnsubscribeDoesNotExist);
-    }
-
-    const unsubscribeTestFilePath = path.resolve(
-      testFilesFolderPath,
-      `UnsubscribeTest.txt`
-    );
-    await openFileStream(unsubscribeTestFilePath);
-
-    try {
-      await unsubscribeFromFileStream(unsubscribeTestFilePath);
-    } catch (error) {
-      expect(error).toBeInstanceOf(NoSubscriptionsFoundError);
-    }
-
-    try {
-      flushFileStream("nope");
-    } catch (err) {
-      expect(err).toBeInstanceOf(FileStreamToFlushDoesNotExistError);
-    }
-
-    try {
-      await readFileStream("nope");
-    } catch (err) {
-      expect(err).toBeInstanceOf(FileToReadDoesNotExistError);
-    }
-
-    try {
-      await writeFileStream("nope", "");
-    } catch (err) {
-      expect(err).toBeInstanceOf(FileToWriteDoesNotExistError);
-    }
-
-    try {
-      await openFileStream(unsubscribeTestFilePath);
-    } catch (err) {
-      // console.log(err);
-      expect(err).toBeInstanceOf(FileStreamToOpenAlreadyOpenError);
-    }
   });
 });

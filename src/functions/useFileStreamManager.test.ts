@@ -1,19 +1,12 @@
 import { delay } from "@ocubist/utils";
+import path from "path";
+import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
 import {
-  firstWord,
-  loremIpsumPath,
-  hundredTestFilePaths,
-  clearTestFiles,
   defaultLoremIpsumContent,
+  firstWord,
   testFilesFolderPath,
 } from "../tests/globalSetup";
 import { useFileStreamManager } from "./useFileStreamManager";
-import { promises as fs } from "fs";
-import path from "path";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { createOpenFileStreamKey } from "../helpers/createOpenFileStreamKey";
-import { flushFileStream } from "./flushFileStream";
-import { writeFileStream } from "./writeFileStream";
 
 // Extend Jest matchers to include the custom matcher
 declare global {
@@ -51,8 +44,6 @@ describe("test useFileStreamManager-functions", () => {
 
   const { open, close, read, write, flush, subscribe, unsubscribe } =
     useFileStreamManager(useFileStreamTestPath);
-
-  console.log({ open, useFileStreamTestPath });
 
   test("open, write, read, flush and close", async () => {
     await open();

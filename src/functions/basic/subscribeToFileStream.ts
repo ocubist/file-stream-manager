@@ -1,13 +1,10 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
-import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
-import {
-  createOpenFileStreamKey,
-  createOpenFileStreamKey as fileStreamKey,
-} from "../helpers/createOpenFileStreamKey";
-import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
+import { useFileStreamManagerSingleton } from "../../config/useFileStreamManagerSingleton";
+import { createOpenFileStreamKey } from "../../helpers/createOpenFileStreamKey";
+import { ensureNodeEnvironment } from "../../helpers/ensureNodeEnvironment";
+import { getAllFileStreamSingletonKeys } from "../../helpers/getAllFileStreamSingletonKeys";
+import { OpenFileStreamSingletonObject } from "../../types/OpenFIleStreamSingletonObject";
 import { openFileStream } from "./openFileStream";
-import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
-import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -23,8 +20,12 @@ const SubscribeToFileStreamFailedError = craftMysticError({
 
 /**
  * Subscribes to a file stream, incrementing its usage counter.
- * @param filePath - The path to the file of the stream.
- * @returns The updated counter of active subscriptions.
+ * If the file stream is not already open, it will be opened automatically.
+ *
+ * @param {string} filePath - The path to the file of the stream.
+ * @returns {Promise<void>} A promise that resolves when the subscription is successful.
+ * @throws {NotNodeEnvironmentError} Thrown if the environment is not a Node.js server.
+ * @throws {SubscribeToFileStreamFailedError} Thrown if an unexpected error occurs while subscribing to the file stream.
  */
 export const subscribeToFileStream = async (filePath: string) => {
   ensureNodeEnvironment();
