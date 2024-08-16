@@ -1,0 +1,1 @@
+{"version":3,"file":"severityDescriptionMap.d.ts","sourceRoot":"","sources":["../../src/severity/severityDescriptionMap.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAEnC,MAAM,MAAM,sBAAsB,GAAG;KAClC,CAAC,IAAI,QAAQ,GAAG,MAAM;CACxB,CAAC;AAEF,eAAO,MAAM,sBAAsB,EAAE,sBASpC,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"isErrorCode.js","sourceRoot":"","sources":["../../src/error-code/isErrorCode.ts"],"names":[],"mappings":";;;AAAA,iCAAoC;AAEpC;;;;;GAKG;AACI,IAAM,WAAW,GAAG,UAAC,SAAiB;IAC3C,OAAO,iBAAS,CAAC,SAAS,CAAC,SAAS,CAAC,CAAC,OAAO,CAAC;AAChD,CAAC,CAAC;AAFW,QAAA,WAAW,eAEtB"}

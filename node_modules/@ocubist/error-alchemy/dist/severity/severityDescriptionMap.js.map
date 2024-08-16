@@ -1,0 +1,1 @@
+{"version":3,"file":"severityDescriptionMap.js","sourceRoot":"","sources":["../../src/severity/severityDescriptionMap.ts"],"names":[],"mappings":";;;AAMa,QAAA,sBAAsB,GAA2B;IAC5D,WAAW,EAAE,wBAAwB;IACrC,KAAK,EAAE,8DAA8D;IACrE,UAAU,EAAE,uDAAuD;IACnE,QAAQ,EAAE,oDAAoD;IAC9D,KAAK,EACH,kFAAkF;IACpF,YAAY,EACV,8FAA8F;CACjG,CAAC"}

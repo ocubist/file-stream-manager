@@ -1,0 +1,1 @@
+{"version":3,"file":"LoggerOptions.d.ts","sourceRoot":"","sources":["../../src/types/LoggerOptions.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,MAAM,WAAW,aAAa;IAC5B,KAAK,EAAE,OAAO,GAAG,MAAM,GAAG,MAAM,GAAG,OAAO,CAAC;IAC3C,MAAM,CAAC,EAAE,MAAM,GAAG,MAAM,CAAC;IACzB,WAAW,CAAC,EAAE,MAAM,CAAC;CACtB"}

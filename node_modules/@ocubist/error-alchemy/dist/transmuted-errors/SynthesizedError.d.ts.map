@@ -1,0 +1,1 @@
+{"version":3,"file":"SynthesizedError.d.ts","sourceRoot":"","sources":["../../src/transmuted-errors/SynthesizedError.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AACpD,OAAO,EAAE,oBAAoB,EAAE,MAAM,SAAS,CAAC;AAE/C;;;;GAIG;AACH,qBAAa,gBAAiB,SAAQ,eAAe;IACnD;;;;OAIG;gBACS,KAAK,EAAE,oBAAoB;CAMxC"}

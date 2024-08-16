@@ -1,0 +1,1 @@
+{"version":3,"file":"isNodeEnvironment.js","sourceRoot":"","sources":["../../src/nodeDetector/isNodeEnvironment.ts"],"names":[],"mappings":";;;AAAA;;;;GAIG;AACI,IAAM,iBAAiB,GAAG;IAC/B,OAAA,OAAO,OAAO,KAAK,WAAW;QAC9B,OAAO,CAAC,QAAQ,IAAI,IAAI;QACxB,OAAO,CAAC,QAAQ,CAAC,IAAI,IAAI,IAAI;AAF7B,CAE6B,CAAC;AAHnB,QAAA,iBAAiB,qBAGE"}

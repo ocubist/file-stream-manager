@@ -1,0 +1,1 @@
+{"version":3,"file":"escapeIdentifierPart.js","sourceRoot":"","sources":["../../src/utility/escapeIdentifierPart.ts"],"names":[],"mappings":";;;AAAA;;;;;GAKG;AACI,IAAM,oBAAoB,GAAG,UAAC,IAAY;IAC/C,OAAO,IAAI,CAAC,OAAO,CAAC,MAAM,EAAE,IAAI,CAAC,CAAC,IAAI,EAAE,CAAC;AAC3C,CAAC,CAAC;AAFW,QAAA,oBAAoB,wBAE/B"}
