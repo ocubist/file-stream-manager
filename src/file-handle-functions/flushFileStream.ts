@@ -3,6 +3,7 @@ import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSin
 import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
 import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -30,6 +31,8 @@ export const flushFileStream = (
   filePath: string,
   cb?: (err?: Error | undefined) => unknown
 ) => {
+  ensureNodeEnvironment();
+
   try {
     getSingleton<OpenFileStreamSingletonObject>(
       fileStreamKey(filePath)

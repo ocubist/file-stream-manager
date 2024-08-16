@@ -5,6 +5,7 @@ import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonO
 import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
 import { removeProcessListeners } from "../helpers/removeProcessListeners";
 import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton, removeSingleton } = useFileStreamManagerSingleton();
 
@@ -28,6 +29,8 @@ export const FileStreamNotFoundError = craftMysticError({
  * @param filePath - Path to the file of the stream to close.
  */
 export const closeFileStream = async (filePath: string) => {
+  ensureNodeEnvironment();
+
   try {
     const singletonName = fileStreamKey(filePath);
     const { onExitCB } =

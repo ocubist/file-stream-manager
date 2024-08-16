@@ -6,6 +6,7 @@ import { createFileAndFolderIfDoesntExist } from "../helpers/createFileAndFolder
 import { FileStreamOptions } from "../types/StreamOptionsType";
 import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
 import { addProcessListeners } from "../helpers/addProcessListener";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { setSingletonIfNotExists, removeSingleton } =
   useFileStreamManagerSingleton();
@@ -48,6 +49,8 @@ export const openFileStream = async (
   filePath: string,
   options?: FileStreamOptions
 ) => {
+  ensureNodeEnvironment();
+
   const key = fileStreamKey(filePath);
   const allKeys = getAllFileStreamSingletonKeys();
 

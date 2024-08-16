@@ -4,6 +4,7 @@ import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenF
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
 import { closeFileStream } from "./closeFileStream";
 import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -37,6 +38,8 @@ export const FileStreamToUnsubscribeDoesNotExist = craftMysticError({
  * @param filePath - Path to the file of the stream to unsubscribe from.
  */
 export const unsubscribeFromFileStream = async (filePath: string) => {
+  ensureNodeEnvironment();
+
   try {
     const key = fileStreamKey(filePath);
     const obj = getSingleton<OpenFileStreamSingletonObject>(key);

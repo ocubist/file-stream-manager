@@ -9,9 +9,11 @@ const NotNodeEnvironmentError = useErrorAlchemy(
   cause: "Thrown because the environment is not node-server.",
 });
 
-if (!isServer()) {
-  throw new NotNodeEnvironmentError({
-    message:
-      "The File-Stream-Manager is made for usage with a Node-Server-Environment.",
-  });
-}
+export const ensureNodeEnvironment = () => {
+  if (!isServer()) {
+    throw new NotNodeEnvironmentError({
+      message:
+        "The File-Stream-Manager is made for usage with a Node-Server-Environment.",
+    });
+  }
+};

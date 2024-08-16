@@ -5,6 +5,7 @@ import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonO
 import { useEventHandler } from "@ocubist/event-handler";
 import { config } from "../config/config";
 import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -35,6 +36,8 @@ export const writeFileStreamEventHandler = useEventHandler(
  * @param chunk - Data to write to the file.
  */
 export const writeFileStream = (filePath: string, chunk: string): boolean => {
+  ensureNodeEnvironment();
+
   try {
     const fileStream = getSingleton<OpenFileStreamSingletonObject>(
       fileStreamKey(filePath)

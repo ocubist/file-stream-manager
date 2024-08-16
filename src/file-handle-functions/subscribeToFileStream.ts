@@ -7,6 +7,7 @@ import {
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
 import { openFileStream } from "./openFileStream";
 import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -26,6 +27,8 @@ const SubscribeToFileStreamFailedError = craftMysticError({
  * @returns The updated counter of active subscriptions.
  */
 export const subscribeToFileStream = async (filePath: string) => {
+  ensureNodeEnvironment();
+
   const fileStreamKey = createOpenFileStreamKey(filePath);
   try {
     if (!getAllFileStreamSingletonKeys().includes(fileStreamKey)) {

@@ -1,5 +1,4 @@
 // @index('./**/!(*.test|*.play).ts', f => `export * from "${f.path}";`, { ignore: ["./tests/**/*", "./play/**/*"] })
-export * from "./_nodeEnvCheck";
 export * from "./config/config";
 export * from "./config/useFileStreamManagerSingleton";
 export * from "./file-handle-functions/closeFileStream";
@@ -14,6 +13,7 @@ export * from "./file-handle-functions/writeFileStream";
 export * from "./helpers/addProcessListener";
 export * from "./helpers/createFileAndFolderIfDoesntExist";
 export * from "./helpers/createOpenFileStreamKey";
+export * from "./helpers/ensureNodeEnvironment";
 export * from "./helpers/getAllFileStreamSingletonKeys";
 export * from "./helpers/removeProcessListeners";
 export * from "./helpers/runAllStreamCleanupCallbacks";

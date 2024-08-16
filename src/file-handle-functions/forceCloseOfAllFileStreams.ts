@@ -2,6 +2,7 @@ import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
 import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { getSingleton, removeSingleton } = useFileStreamManagerSingleton();
 
@@ -20,6 +21,8 @@ const ForceCloseOfAllFileStreamsFailedError = craftMysticError({
  * Used typically for cleanup or shutdown processes.
  */
 export const forceCloseOfAllFileStreams = () => {
+  ensureNodeEnvironment();
+
   try {
     getAllFileStreamSingletonKeys().forEach(async (key) => {
       const instance =

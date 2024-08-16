@@ -1,5 +1,6 @@
 import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import fs from "fs/promises";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 const { craftMysticError } = useErrorAlchemy(
   "file-stream-manager",
@@ -23,6 +24,8 @@ export const FileToReadDoesNotExistError = craftMysticError({
  * @throws ReadFileStreamFailedError if the file cannot be read.
  */
 export const readFileStream = async (filePath: string): Promise<string> => {
+  ensureNodeEnvironment();
+
   try {
     const data = await fs.readFile(filePath, "utf8");
     return data;

@@ -5,6 +5,7 @@ import { readFileStream } from "./readFileStream";
 import { writeFileStream } from "./writeFileStream";
 import { subscribeToFileStream } from "./subscribeToFileStream";
 import { unsubscribeFromFileStream } from "./unsubscribeFromFileStream";
+import { ensureNodeEnvironment } from "../helpers/ensureNodeEnvironment";
 
 /**
  * Provides file stream management functionalities.
@@ -12,6 +13,8 @@ import { unsubscribeFromFileStream } from "./unsubscribeFromFileStream";
  * @returns {Object} An object with file stream management functions.
  */
 export const useFileStreamManager = (filePath: string) => {
+  ensureNodeEnvironment();
+
   return {
     open: async () => await openFileStream(filePath),
     close: async () => await closeFileStream(filePath),
