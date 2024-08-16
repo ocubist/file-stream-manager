@@ -30,6 +30,8 @@ npm install --save-dev typedoc
 
 # Install @ocubist packages
 npm install @ocubist/error-alchemy@latest
+npm install @ocubist/singleton-manager@latest
+npm install @ocubist/http-request-handler@latest
 ```
 
 ## Update template-files from `package-template`

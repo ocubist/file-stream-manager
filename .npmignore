@@ -1,5 +1,8 @@
 # Development files
-src/
+src/tests/
+src/**/*.test.ts
+src/**/*.test.js
+src/play/
 tests/
 play/
 coverage/
@@ -7,6 +10,9 @@ node_modules/
 docs/
 logs/
 .archive/
+
+# Github
+.github
 
 # Configuration files
 tsconfig.json

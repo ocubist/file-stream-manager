@@ -31,9 +31,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"] // Specifies library files to be included in the compilation
   },
   "include": [
-    "src/**/*", // Include all files in the src directory
-    "src/file-handle-functions/openFileStream.testOld.ts",
-    "src/file-handle-functions/.openFileStream.testOld.ts"
+    "src/**/*" // Include all files in the src directory
   ],
   "exclude": [
     "src/tests",
