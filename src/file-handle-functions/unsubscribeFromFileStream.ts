@@ -2,27 +2,30 @@ import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
 import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
-import { closeFileStream } from "../basic-functions/closeFileStream";
+import { closeFileStream } from "./closeFileStream";
+import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
 
-const { getSingleton, removeSingleton } = useFileStreamManagerSingleton();
+const { getSingleton } = useFileStreamManagerSingleton();
 
 const { craftMysticError } = useErrorAlchemy(
   "file-stream-manager",
   "unsubscribeFromFileStream"
 );
 
-const UnsubscribeFromFileStreamFailedError = craftMysticError({
+export const UnsubscribeFromFileStreamFailedError = craftMysticError({
   name: "UnsubscribeFromFileStreamFailedError",
   severity: "critical",
 });
 
-const UnsubscribeFromFileStreamNotFoundError = craftMysticError({
-  name: "UnsubscribeFromFileStreamNotFoundError",
+export const NoSubscriptionsFoundError = craftMysticError({
+  name: "NoSubscriptionsFoundError",
   severity: "critical",
+  cause:
+    "The counter for the subscriptions to that fileStream was undefined, which indicates, that the fileStream was not created by using 'subscribeToFileStream'",
 });
 
-const NoSubscriptionsFoundError = craftMysticError({
-  name: "NoSubscriptionsFoundError",
+export const FileStreamToUnsubscribeDoesNotExist = craftMysticError({
+  name: "FileStreamToUnsubscribeDoesNotExist",
   severity: "critical",
   cause:
     "The counter for the subscriptions to that fileStream was undefined, which indicates, that the fileStream was not created by using 'subscribeToFileStream'",
@@ -33,7 +36,7 @@ const NoSubscriptionsFoundError = craftMysticError({
  * Closes the stream if the counter reaches zero.
  * @param filePath - Path to the file of the stream to unsubscribe from.
  */
-export const unsubscribeFromFileStream = (filePath: string) => {
+export const unsubscribeFromFileStream = async (filePath: string) => {
   try {
     const key = fileStreamKey(filePath);
     const obj = getSingleton<OpenFileStreamSingletonObject>(key);
@@ -50,15 +53,20 @@ export const unsubscribeFromFileStream = (filePath: string) => {
     if (obj.counter <= 0) {
       // obj.instance.end();
       // obj.onExitCB();
-      closeFileStream(filePath);
+      await closeFileStream(filePath);
     }
   } catch (err) {
-    if (UnsubscribeFromFileStreamNotFoundError.compare(err)) {
+    if (SingletonDoesNotExistError.compare(err)) {
+      throw new FileStreamToUnsubscribeDoesNotExist({
+        message: "No subscriptions for that stream found.",
+        payload: { filePath },
+        origin: err,
+      });
+    } else if (NoSubscriptionsFoundError.compare(err)) {
       throw err;
     } else {
       throw new UnsubscribeFromFileStreamFailedError({
-        message:
-          "Something unexpected happened while unsubscribing from a FileStream",
+        message: "Unexpected Error while unsubscribing from a FileStream",
         origin: err,
         payload: { filePath },
       });

@@ -2,6 +2,7 @@ import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
 import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
 import { OpenFileStreamSingletonObject } from "../types/OpenFIleStreamSingletonObject";
+import { SingletonDoesNotExistError } from "@ocubist/singleton-manager";
 
 const { getSingleton } = useFileStreamManagerSingleton();
 
@@ -10,9 +11,14 @@ const { craftMysticError } = useErrorAlchemy(
   "flushFileStream"
 );
 
-const FlushFileStreamFailedError = craftMysticError({
+export const FlushFileStreamFailedError = craftMysticError({
   name: "FlushFileStreamFailedError",
   severity: "critical",
+});
+
+export const FileStreamToFlushDoesNotExistError = craftMysticError({
+  name: "FileStreamToFlushDoesNotExistError",
+  severity: "unimportant",
 });
 
 /**
@@ -29,10 +35,18 @@ export const flushFileStream = (
       fileStreamKey(filePath)
     ).instance.flush(cb);
   } catch (err) {
-    throw new FlushFileStreamFailedError({
-      message: "Something unexpected happened flushing the FileStream",
-      origin: err,
-      payload: { filePath },
-    });
+    if (SingletonDoesNotExistError.compare(err)) {
+      throw new FileStreamToFlushDoesNotExistError({
+        message: "FileStream to Flush doesn't exist",
+        origin: err,
+        payload: { filePath },
+      });
+    } else {
+      throw new FlushFileStreamFailedError({
+        message: "Something unexpected happened flushing the FileStream",
+        origin: err,
+        payload: { filePath },
+      });
+    }
   }
 };

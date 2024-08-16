@@ -1,3 +1,6 @@
+# specific
+src/tests/testFiles
+
 # Logs
 logs
 *.log

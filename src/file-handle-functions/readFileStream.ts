@@ -6,8 +6,13 @@ const { craftMysticError } = useErrorAlchemy(
   "readFileStream"
 );
 
-const ReadFileStreamFailedError = craftMysticError({
+export const ReadFileStreamFailedError = craftMysticError({
   name: "ReadFileStreamFailedError",
+  severity: "critical",
+});
+
+export const FileToReadDoesNotExistError = craftMysticError({
+  name: "FileToReadDoesNotExistError",
   severity: "critical",
 });
 
@@ -22,10 +27,23 @@ export const readFileStream = async (filePath: string): Promise<string> => {
     const data = await fs.readFile(filePath, "utf8");
     return data;
   } catch (err) {
-    throw new ReadFileStreamFailedError({
-      message: "Error while trying to read a file",
-      origin: err,
-      payload: { filePath },
-    });
+    if (
+      typeof err === "object" &&
+      (err as Object).hasOwnProperty("code") &&
+      // @ts-ignore
+      err.code === "ENOENT"
+    ) {
+      throw new FileToReadDoesNotExistError({
+        message: "File to read does not exist",
+        origin: err,
+        payload: { filePath },
+      });
+    } else {
+      throw new ReadFileStreamFailedError({
+        message: "Unexpected Error trying to read a file",
+        origin: err,
+        payload: { filePath },
+      });
+    }
   }
 };

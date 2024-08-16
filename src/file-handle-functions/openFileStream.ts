@@ -2,11 +2,13 @@ import { useErrorAlchemy } from "@ocubist/error-alchemy";
 import SonicBoom, { SonicBoomOpts } from "sonic-boom";
 import { useFileStreamManagerSingleton } from "../config/useFileStreamManagerSingleton";
 import { createOpenFileStreamKey as fileStreamKey } from "../helpers/createOpenFileStreamKey";
+import { createFileAndFolderIfDoesntExist } from "../helpers/createFileAndFolderIfDoesntExist";
 import { FileStreamOptions } from "../types/StreamOptionsType";
 import { getAllFileStreamSingletonKeys } from "../helpers/getAllFileStreamSingletonKeys";
 import { addProcessListeners } from "../helpers/addProcessListener";
 
-const { setSingletonIfNotExists, removeSingleton } = useFileStreamManagerSingleton();
+const { setSingletonIfNotExists, removeSingleton } =
+  useFileStreamManagerSingleton();
 
 const { craftMysticError } = useErrorAlchemy(
   "file-stream-manager",
@@ -24,6 +26,11 @@ export const OpenFileStreamFailedError = craftMysticError({
   severity: "critical",
 });
 
+export const FileStreamToOpenAlreadyOpenError = craftMysticError({
+  name: "FileStreamToOpenAlreadyOpenError",
+  severity: "critical",
+});
+
 /**
  * Delay function to wait for a specified amount of time.
  * @param ms - The number of milliseconds to wait.
@@ -37,14 +44,25 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * @param options - Optional configuration options for the file stream.
  * @returns The key of the singleton object for the opened stream.
  */
-export const openFileStream = (
+export const openFileStream = async (
   filePath: string,
   options?: FileStreamOptions
 ) => {
   const key = fileStreamKey(filePath);
+  const allKeys = getAllFileStreamSingletonKeys();
+
+  if (allKeys.includes(key)) {
+    throw new FileStreamToOpenAlreadyOpenError({
+      message: "FileStream to open is already open",
+      payload: { filePath },
+    });
+  }
 
   try {
-    if (getAllFileStreamSingletonKeys().length === 0) {
+    // Ensure the file and its directories exist
+    await createFileAndFolderIfDoesntExist(filePath);
+
+    if (allKeys.length === 0) {
       addProcessListeners();
     }
 
@@ -59,32 +77,30 @@ export const openFileStream = (
 
       const instance = new SonicBoom(theOptions);
 
-      const onExitCB = (() => {
+      const onExitCB: () => Promise<void> = async () => {
         let called = false;
-        return async () => {
-          if (!called) {
-            for (let attempt = 0; attempt < 5; attempt++) {
-              try {
-                instance.flushSync();
-                break; // Exit the loop if flushSync succeeds
-              } catch (err) {
-                if (attempt === 4) {
-                  throw new ExitingFileStreamFailedError({
-                    message:
-                      "Error while finalizing File-Stream by flushing it and ending the instance",
-                    origin: err,
-                    payload: { filePath, options },
-                  });
-                }
-                await delay(1000); // Wait for 1000ms before retrying
+        if (!called) {
+          for (let attempt = 0; attempt < 5; attempt++) {
+            try {
+              instance.flushSync();
+              break; // Exit the loop if flushSync succeeds
+            } catch (err) {
+              if (attempt === 4) {
+                throw new ExitingFileStreamFailedError({
+                  message:
+                    "Unexpected error while finalizing File-Stream by flushing it and ending the instance",
+                  origin: err,
+                  payload: { filePath, options },
+                });
               }
+              await delay(1000); // Wait for 1000ms before retrying
             }
-            instance.end();
-            removeSingleton(key);
-            called = true;
           }
-        };
-      })();
+          instance.end();
+          removeSingleton(key);
+          called = true;
+        }
+      };
 
       return {
         instance,
@@ -93,7 +109,7 @@ export const openFileStream = (
     });
   } catch (err) {
     throw new OpenFileStreamFailedError({
-      message: "Something went wrong opening the FileStream",
+      message: "Unexpected error opening the FileStream",
       origin: err,
       payload: { filePath, options },
     });

@@ -1,6 +1,6 @@
 {
-  "name": "PACKAGE_NAME",
-  "version": "0.1.0",
+  "name": "@ocubist/file-stream-manager",
+  "version": "0.5.0",
   "description": "DESCRIPTION",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,10 +25,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@ocubist/error-alchemy": "^0.6.2",
-    "@ocubist/event-handler": "^0.1.4",
-    "@ocubist/singleton-manager": "^0.4.2",
-    "@ocubist/utils": "^0.5.5",
+    "@ocubist/error-alchemy": "^0.9.3",
+    "@ocubist/event-handler": "^0.2.3",
+    "@ocubist/singleton-manager": "^0.6.1",
+    "@ocubist/utils": "^0.6.2",
     "sonic-boom": "^3.7.0",
     "zod": "^3.22.4"
   }
